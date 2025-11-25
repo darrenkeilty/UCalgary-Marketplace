@@ -5,7 +5,7 @@ import registrationRoutes from "./routes/authRoutes/registrationRoutes.js";
 import postRoutes from "./routes/postRoutes/postRoutes.js";
 import passwordRoutes from "./routes/authRoutes/passwordRoutes.js";
 import savedPostRoutes from "./routes/userSettingsRoute/savedPostRoute.js";
-import mySettingsRoutes from "./routes/userSettingsRoute/mySettingsRoute.js";
+import reportRoutes from "./routes/reportRoutes/reportRoutes.js";
 
 const app = express();
 
@@ -31,9 +31,9 @@ app.use("/api/posts", postRoutes);
 
 
 // Post routes to get saved posts
-app.use("/api/getSavedPosts", savedPostRoutes)
+app.use("/api/getSavedPosts", savedPostRoutes);
 
-// Post route for settings updates
-app.use("/api/settings", mySettingsRoutes);
+// Report routes
+app.use("/api/reports", reportRoutes);
 
 export default app;
