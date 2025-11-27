@@ -90,3 +90,62 @@ export const unsavePost = (req, res) => {
         });
     });
 };
+
+// 3) Save (add) a post for this user
+export const savePost = (req, res) => {
+    const { userId, postId } = req.body;
+
+    if (!userId || !postId) {
+        return res
+            .status(400)
+            .json({ error: "userId and postId are required" });
+    }
+
+    // Check if post already saved (avoid duplicates)
+    const checkExistingQuery = `
+        SELECT * FROM saved_posts
+        WHERE user_id = ? AND post_id = ?
+    `;
+
+    db.query(checkExistingQuery, [userId, postId], (checkErr, checkResults) => {
+        if (checkErr) {
+            console.error("DB error (savePost - check existing):", checkErr);
+            return res.status(500).json({ error: "Database error" });
+        }
+
+        // If already saved, return success message
+        if (checkResults.length > 0) {
+            return res.status(200).json({
+                success: true,
+                message: "Post is already saved",
+            });
+        }
+
+        // Insert into saved_posts table
+        const insertQuery = `
+            INSERT INTO saved_posts (user_id, post_id)
+            VALUES (?, ?)
+        `;
+
+        db.query(insertQuery, [userId, postId], (err, result) => {
+            if (err) {
+                console.error("DB error (savePost - insert):", err);
+                
+                // Handle duplicate key error (in case of race condition)
+                if (err.code === "ER_DUP_ENTRY") {
+                    return res.status(200).json({
+                        success: true,
+                        message: "Post is already saved",
+                    });
+                }
+                
+                return res.status(500).json({ error: "Failed to save post" });
+            }
+
+            return res.status(201).json({
+                success: true,
+                message: "Post saved successfully",
+            });
+        });
+    });
+};
