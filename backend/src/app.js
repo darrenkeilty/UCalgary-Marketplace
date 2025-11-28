@@ -6,7 +6,7 @@ import postRoutes from "./routes/postRoutes/postRoutes.js";
 import passwordRoutes from "./routes/authRoutes/passwordRoutes.js";
 import savedPostRoutes from "./routes/userSettingsRoute/savedPostRoute.js";
 import mySettingsRoutes from "./routes/userSettingsRoute/mySettingsRoute.js";
-import myContactedRoutes from "./routes/userSettingsRoute/myContactedRoute.js";
+import myContactedRoutes, { contactSeller, canContactSeller } from "./routes/userSettingsRoute/myContactedRoute.js";
 import myPostsRoutes from "./routes/userSettingsRoute/myPostsRoute.js";
 import myEventsRoute from "./routes/userSettingsRoute/myEventsRoute.js";
 
@@ -41,6 +41,10 @@ app.use("/api/settings", mySettingsRoutes);
 
 // Contacted posts list
 app.use("/api/getContactedPosts", myContactedRoutes);
+
+// Contact seller endpoints
+app.post("/api/contactSeller", contactSeller);
+app.post("/api/canContactSeller", canContactSeller);
 
 // My posts route
 app.use("/api/my-posts", myPostsRoutes);
