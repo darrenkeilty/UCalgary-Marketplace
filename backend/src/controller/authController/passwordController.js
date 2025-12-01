@@ -1,6 +1,15 @@
 import db from "../../config/db.js";
 import bcrypt from "bcryptjs";
-import transporter from "../../config/mail.js";
+import nodemailer from "nodemailer";
+
+// Nodemailer transporter using Gmail app password
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER, // e.g. ucaglarymarketplace@gmail.com
+        pass: process.env.EMAIL_PASS, // app password from .env / Docker
+    },
+});
 
 const generateVerificationCode = () => {
     const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -14,7 +23,7 @@ const generateVerificationCode = () => {
 const getExpirationTime = () => {
     const expirationDate = new Date();
     expirationDate.setMinutes(expirationDate.getMinutes() + 5);
-    return expirationDate.toTimeString().substring(0, 8); // HH:MM:SS
+    return expirationDate.toTimeString().substring(0, 8);
 };
 
 export const forgotPassword = (req, res) => {
@@ -41,6 +50,7 @@ export const forgotPassword = (req, res) => {
                     .json({ success: false, error: "Failed to generate reset code" });
             }
 
+            // Send password reset email
             const mailOptions = {
                 from: process.env.EMAIL_USER,
                 to: email,
@@ -50,19 +60,20 @@ export const forgotPassword = (req, res) => {
 
             transporter.sendMail(mailOptions, (mailErr, info) => {
                 if (mailErr) {
-                    console.error("Error sending reset email:", mailErr);
+
                     return res.status(500).json({
                         success: false,
                         error: "Failed to send password reset email",
                     });
                 }
 
-
+                console.log("Password reset email sent:", info.response);
+                // remove later
+                console.log(`Password reset code for ${email}: ${code}`);
 
                 return res.status(200).json({
                     success: true,
-                    message:
-                        "Reset code generated and email sent. Please check your inbox.",
+                    message: "Reset code generated and email sent. Please check your inbox.",
                 });
             });
         });
@@ -116,10 +127,10 @@ export const verifyResetCode = (req, res) => {
     const normalizedCode = code.toUpperCase();
 
     const verifyQuery = `
-    SELECT randomCode
-    FROM verification_codes
-    WHERE randomCode = ? AND expiration_date > CURTIME()
-  `;
+        SELECT randomCode
+        FROM verification_codes
+        WHERE randomCode = ? AND expiration_date > CURTIME()
+    `;
 
     db.query(verifyQuery, [normalizedCode], (err, rows) => {
         if (err) {

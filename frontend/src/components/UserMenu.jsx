@@ -91,23 +91,23 @@ export default function UserMenu() {
           },
         }}
       >
-        <MenuItem sx={{ paddingRight: 3 }} onClick={()=> handleNavigate("user")}>
+        <MenuItem sx={{ paddingRight: 3 }} onClick={handleClose}>
           My Settings
         </MenuItem>
         <CustomDivider marginThin></CustomDivider>
-        <MenuItem sx={{ paddingRight: 3 }} onClick={()=>handleNavigate("user/contacted")}>
+        <MenuItem sx={{ paddingRight: 3 }} onClick={handleClose}>
           My Contacted
         </MenuItem>
         <CustomDivider marginThin></CustomDivider>
-        <MenuItem sx={{ paddingRight: 3 }} onClick={()=>handleNavigate("user/market")}>
+        <MenuItem sx={{ paddingRight: 3 }} onClick={handleClose}>
           My Posts
         </MenuItem>
         <CustomDivider marginThin></CustomDivider>
-        <MenuItem sx={{ paddingRight: 3 }} onClick={()=>handleNavigate("user/events")}>
+        <MenuItem sx={{ paddingRight: 3 }} onClick={handleClose}>
           My Events
         </MenuItem>
         <CustomDivider marginThin></CustomDivider>
-        <MenuItem sx={{ paddingRight: 3 }} onClick={()=>handleNavigate("user/saved")}>
+        <MenuItem sx={{ paddingRight: 3 }} onClick={handleClose}>
           My Saved
         </MenuItem>
         <CustomDivider marginThin></CustomDivider>

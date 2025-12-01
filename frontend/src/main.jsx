@@ -12,13 +12,9 @@ import EditPost from "./pages/EditPost";
 import EditEvent from "./pages/EditEvent";
 import CreateEvent from "./pages/CreateEvent";
 import MySettings from "./pages/MySettings";
-import MyPosts from "./pages/MyPosts";
-import MyContacted from "./pages/MyContacted";
-import MySaved from "./pages/MySaved";
-import  MyEvents from "./pages/MyEvents";
+import MarketItemPage from "./pages/MarketItemPage";
 import Event from "./pages/Event";
 import EventItemPage from "./pages/EventItemPage";
-import MarketItemPage from "./pages/MarketItemPage";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
@@ -28,11 +24,6 @@ import ViewReportedEvents from "./pages/ViewReportedEvents";
 import ViewReportedPosts from "./pages/ViewReportedPosts";
 import AdminSettings from "./pages/AdminSettings";
 import AdminProfile from "./pages/AdminProfile";
-import AdminList from "./pages/FindAdmin";
-import FindUser from "./pages/FindUser";
-import AdminDashboard from "./pages/AdminDashboard";
-import ViewReportedUsers from "./pages/ViewReportedUsers";
-
 
 const black = "#221F1F";
 const  inputBorderColor= "#757575"; 
@@ -106,6 +97,9 @@ const theme = createTheme({
   
 });
 
+
+
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
@@ -115,10 +109,10 @@ createRoot(document.getElementById("root")).render(
           <Route path="signup" element={<SignUp></SignUp>}></Route>
           <Route path="user">
             <Route index element={<MySettings></MySettings>} />
-            <Route path="market">
+            <Route path="posts">
               <Route
               index
-              element={<MyPosts></MyPosts>}
+              element={<div>My Posts page - Not finished.</div>}
             ></Route>
              <Route
               path="new"
@@ -133,7 +127,7 @@ createRoot(document.getElementById("root")).render(
              <Route path="events">
               <Route
               index
-              element={<MyEvents></MyEvents>}
+              element={<div>My Events page - Not finished.</div>}
             ></Route>
               <Route
               path="new"
@@ -143,9 +137,8 @@ createRoot(document.getElementById("root")).render(
               path=":id"
               element={<EditEvent></EditEvent>}
             ></Route>
+        
             </Route>
-             <Route path="saved" element={<MySaved></MySaved>}></Route>
-             <Route path="contacted" element={<MyContacted></MyContacted>}></Route>
           </Route>
           {/* @ Deep, feel free to customize as needed. i made this for testing. */}
           <Route path="home" element={<Home></Home>}></Route>
@@ -153,15 +146,9 @@ createRoot(document.getElementById("root")).render(
           <Route path="/market/:id" element={<MarketItemPage />} />
           <Route path="events" element={<Event />} />
           <Route path="events/:id" element={<EventItemPage />} />
-          <Route path="admin/find-admin" element={<AdminList></AdminList>}></Route>
-          <Route path ="admin/find-user" element={<FindUser></FindUser>}></Route>
-          <Route path="users" element={<FindUser />} />
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="admin/reported-users" element={<ViewReportedUsers></ViewReportedUsers>}></Route>
-
 
           <Route path="reports">
-             <Route path="events">
+             <Route path="event">
                   <Route index element={<ViewReportedEvents></ViewReportedEvents>}></Route>
                   <Route path=":id" element={<div>Not done view reported event.</div>}></Route>
              </Route>
