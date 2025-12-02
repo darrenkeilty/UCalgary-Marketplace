@@ -1,5 +1,4 @@
 // FindUser.jsx
-
 import { useEffect, useState } from "react";
 import {
   Box,
@@ -21,36 +20,51 @@ export default function FindUser() {
   const [searchTermUser, setSearchTermUser] = useState("");
   const [users, setUsers] = useState([]);
 
-  useEffect(() => {
-    // TODO: Replace mock data with real backend call.
-    
+const page_size = 6;
 
-    async function fetchUsers() {
-      try {
-    
-        // TEMP: mock data
-        setUsers([
-          { id: 1, name: "Jane Doe", email: "janedoe@ucalgary.ca" },
-          { id: 2, name: "Alex Lee", email: "alex.lee@ucalgary.ca" },
-          { id: 3, name: "Chris Wong", email: "chris.wong@ucalgary.ca" },
-          { id: 4, name: "Sam Taylor", email: "sam.taylor@ucalgary.ca" },
-          { id: 5, name: "Jordan Ray", email: "jordan.ray@ucalgary.ca" },
-        ]);
-      } catch (err) {
-        console.error("Failed to fetch users:", err);
+useEffect(() => {
+  async function fetchUsers() {
+    try {
+      const searchTerm = searchTermUser.trim();
+
+      const queryParams = new URLSearchParams({
+        limit: page_size.toString(),
+        offset: "0",
+      });
+
+      if (searchTerm !== "") {
+        queryParams.append("q", searchTerm);
       }
-    }
 
-    fetchUsers();
-  }, [searchTermUser]);
+      const res = await fetch(
+        `http://localhost:8080/api/admin/users?${queryParams.toString()}`
+      );
+
+      const data = await res.json();
+
+      const mapped = (data.users || []).map((u) => ({
+        id: u.user_id,
+        name: `${u.fname} ${u.lname}`.trim(),
+        email: u.email,
+      }));
+
+      setUsers(mapped);
+    } catch (err) {
+      console.error("There was a failure to fetch users:", err);
+      setUsers([]);
+    }
+  }
+
+  fetchUsers();
+}, [searchTermUser]);
 
   // Filter the users based on search term
   const filterUsers = users.filter((user) => {
-    const term = searchTermUser.toLowerCase().trim();
+    const searchTerm = searchTermUser.toLowerCase().trim();
     return (
-      !term ||
-      user.name.toLowerCase().includes(term) ||
-      user.email.toLowerCase().includes(term)
+      !searchTerm ||
+      user.name.toLowerCase().includes(searchTerm) ||
+      user.email.toLowerCase().includes(searchTerm)
     );
   });
 
@@ -93,14 +107,14 @@ export default function FindUser() {
           {/*  Title */}
           <Box>
               <Typography variant="h4" sx={{
-                            mb: 2,
-                            fontSize: {
-                                xs: "24px",  
-                                sm: "28px",  
-                                md: "32px", 
-                            },
-                            fontWeight: 400,
-                        }}>
+                  mb: 2,
+                  fontSize: {
+                      xs: "24px",  
+                      sm: "28px",  
+                      md: "32px", 
+                  },
+                  fontWeight: 400,
+              }}>
               Find User
             </Typography>
           </Box>
