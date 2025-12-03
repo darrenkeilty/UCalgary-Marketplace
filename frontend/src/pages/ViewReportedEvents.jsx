@@ -23,14 +23,39 @@ export default function ViewReportedEvents() {
         );
 
         if (!response.ok) {
-          console.error("Failed to fetch reported events");
+          const errorData = await response.json().catch(() => ({}));
+          console.error("Failed to fetch reported events:", response.status, errorData);
+          if (isMounted) {
+            setItems([]);
+          }
           return;
         }
 
-        let data = await response.json();
+        let data;
+        try {
+          data = await response.json();
+        } catch (parseError) {
+          console.error("Failed to parse JSON response:", parseError);
+          if (isMounted) {
+            setItems([]);
+          }
+          return;
+        }
+        
+        // Check if response is an error object
+        if (data && data.error) {
+          console.error("API error:", data.error);
+          if (isMounted) {
+            setItems([]);
+          }
+          return;
+        }
         
         if (!Array.isArray(data)) {
-          console.error("Expected array but got:", typeof data);
+          console.error("Expected array but got:", typeof data, data);
+          if (isMounted) {
+            setItems([]);
+          }
           return;
         }
         
