@@ -504,3 +504,185 @@ export function getMarketItemById(req, res) {
     res.json({ ...base, images });
   });
 }
+
+// -----------------------------------------------
+// Get market item WITH report categories
+// -----------------------------------------------
+
+export function getMarketItemByIdWithReports(req, res) {
+  const { id } = req.params;
+  const postId = Number(id);
+  
+  if (!Number.isInteger(postId) || postId <= 0) {
+    return res.status(400).json({ error: "Invalid market item id" });
+  }
+
+  const sql = `
+    SELECT
+      p.post_id        AS id,
+      p.name           AS title,
+      p.description    AS description,
+      p.price          AS price,
+      p.post_type      AS type,
+      p.postal_code    AS postal_code,
+      p.posted_date    AS posted_date,
+      p.user_id        AS seller_id,
+      u.fname          AS seller_fname,
+      u.lname          AS seller_lname,
+      u.email          AS seller_email,
+      mp.item_condition AS item_condition,
+      i.image_id,
+      i.image_text_data AS image_data
+    FROM posts p
+    JOIN market_posts mp ON mp.market_id = p.post_id
+    JOIN users u ON u.user_id = p.user_id
+    LEFT JOIN images i   ON i.post_id = p.post_id
+    WHERE p.post_id = ? AND p.post_type = 'market'
+  `;
+
+  db.query(sql, [postId], (err, rows) => {
+    if (err) {
+      console.error("getMarketItemByIdWithReports sql error:", err);
+      return res.status(500).json({ error: "Failed to fetch market item" });
+    }
+
+    if (!rows.length) {
+      return res.status(404).json({ error: "Market item not found" });
+    }
+
+    const first = rows[0];
+    const base = {
+      id: first.id,
+      title: first.title,
+      description: first.description,
+      price: first.price,
+      type: first.type,
+      postal_code: first.postal_code,
+      posted_date: first.posted_date,
+      seller_id: first.seller_id,
+      seller_fname: first.seller_fname,
+      seller_lname: first.seller_lname,
+      seller_email: first.seller_email,
+      item_condition: first.item_condition,
+    };
+
+    const images = rows
+      .filter((r) => r.image_id != null && r.image_data != null)
+      .map((r) => ({
+        image_id: r.image_id,
+        data: Buffer.isBuffer(r.image_data)
+          ? r.image_data.toString("base64")
+          : String(r.image_data),
+      }));
+
+    const reportSql = `
+      SELECT DISTINCT r.reason
+      FROM reports r
+      JOIN post_report pr ON pr.report_id = r.report_id
+      WHERE pr.post_id = ?
+    `;
+
+    db.query(reportSql, [postId], (reportErr, reportRows) => {
+      if (reportErr) {
+        console.error("getMarketItemByIdWithReports report query error:", reportErr);
+        return res.json({ ...base, images, report_categories: [] });
+      }
+
+      const reportCategories = reportRows.map((r) => r.reason).filter((r) => r);
+      res.json({ ...base, images, report_categories: reportCategories });
+    });
+  });
+}
+
+// -----------------------------------------------
+// Get event WITH report categories
+// -----------------------------------------------
+
+export function getEventByIdWithReports(req, res) {
+  const { id } = req.params;
+  const eventId = Number(id);
+  
+  if (!Number.isInteger(eventId) || eventId <= 0) {
+    return res.status(400).json({ error: "Invalid event id" });
+  }
+
+  const sql = `
+    SELECT
+        p.post_id           AS id,
+        p.name              AS title,
+        p.description       AS description,
+        p.price             AS price,
+        p.post_type         AS type,
+        p.postal_code       AS postal_code,
+        p.posted_date       AS posted_date,
+        p.user_id           AS organizer_id,
+        u.fname             AS organizer_fname,
+        u.lname             AS organizer_lname,
+        u.email             AS organizer_email,
+        e.organization_name AS organization_name,
+        e.event_start       AS event_start,
+        e.event_end         AS event_end,
+        i.image_id,
+        i.image_text_data   AS image_data
+    FROM posts p
+    JOIN event_posts e ON e.event_id = p.post_id
+    JOIN users u       ON u.user_id = p.user_id
+    LEFT JOIN images i ON i.post_id = p.post_id
+    WHERE p.post_id = ? AND p.post_type = 'event'
+  `;
+
+  db.query(sql, [eventId], (err, rows) => {
+    if (err) {
+      console.error("getEventByIdWithReports sql error:", err);
+      return res.status(500).json({ error: "Failed to fetch event" });
+    }
+
+    if (!rows.length) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    const first = rows[0];
+    const base = {
+        id: first.id,
+        title: first.title,
+        description: first.description,
+        price: first.price,
+        type: first.type,
+        postal_code: first.postal_code,
+        posted_date: first.posted_date,
+        organizer_id: first.organizer_id,
+        organizer_fname: first.organizer_fname,
+        organizer_lname: first.organizer_lname,
+        organizer_email: first.organizer_email,
+        organization_name: first.organization_name,
+        event_start: first.event_start,
+        event_end: first.event_end,
+    };
+
+    const images = rows
+      .filter((r) => r.image_id != null && r.image_data != null)
+      .map((r) => ({
+        image_id: r.image_id,
+        data: Buffer.isBuffer(r.image_data)
+          ? r.image_data.toString("base64")
+          : String(r.image_data),
+      }));
+
+    const reportSql = `
+      SELECT DISTINCT r.reason
+      FROM reports r
+      JOIN post_report pr ON pr.report_id = r.report_id
+      WHERE pr.post_id = ?
+    `;
+
+    db.query(reportSql, [eventId], (reportErr, reportRows) => {
+      if (reportErr) {
+        console.error("getEventByIdWithReports report query error:", reportErr);
+        return res.json({ ...base, images, report_categories: [] });
+      }
+
+      const reportCategories = reportRows.map((r) => r.reason).filter((r) => r);
+      res.json({ ...base, images, report_categories: reportCategories });
+    });
+  });
+}
