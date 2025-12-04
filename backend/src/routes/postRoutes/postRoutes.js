@@ -5,7 +5,9 @@ import {
     getMarketResults,
     getEventResults,
     getEventById,
-    getMarketItemById
+    getMarketItemById,
+    getMarketItemByIdWithReports,
+    getEventByIdWithReports
 } from "../../controller/postsController/postController.js";
 
 const router = express.Router();
@@ -25,6 +27,12 @@ router.get("/itemdetails/:id", getMarketItemById);
 
 // get specific event by id
 router.get("/eventdetails/:id", getEventById);
+
+// get specific marketplace item by id WITH report categories (for ViewReportedMarketPost page)
+router.get("/itemdetails/:id/reports", getMarketItemByIdWithReports);
+
+// get specific event by id WITH report categories (for ViewReportedEventPost page)
+router.get("/eventdetails/:id/reports", getEventByIdWithReports);
 
 export default router;
 
