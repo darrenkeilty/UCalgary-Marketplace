@@ -50,7 +50,8 @@ export default function ViewReportedEvents() {
           }
           return;
         }
-        
+
+        data = [...data.events];
         if (!Array.isArray(data)) {
           console.error("Expected array but got:", typeof data, data);
           if (isMounted) {

@@ -51,6 +51,9 @@ export default function ViewReportedPosts() {
           return;
         }
         
+          
+          data = [...data.posts];
+          
         if (!Array.isArray(data)) {
           console.error("Expected array but got:", typeof data, data);
           if (isMounted) {
