@@ -8,7 +8,7 @@
 1. From the command line, move into the folder you would like the git repository to reside in.
 2. Clone the git repository.
 ```bash
-git clone git@csgit.ucalgary.ca:enioluwafe.balogun/seng513-202401-group-15.git
+git clone https://github.com/darrenkeilty/UCalgary-Marketplace.git
 ```
 3. Move into to the folder: seng513-202401-group-15
 4. Make a file called '.env' inside the current directory (seng513-202401-group-15). 
