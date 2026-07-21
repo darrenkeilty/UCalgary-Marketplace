@@ -61,13 +61,20 @@ Create a `.env` file in the project root:
 cp .env.sample .env
 ```
 
-Open `.env` and set your values. At minimum, update `DB_PASSWORD`. The `EMAIL_USER` and `EMAIL_PASS` fields are pre-configured for the shared project email — leave them as-is to enable email features (registration verification, password reset, contact seller).
+Open `.env` and fill in your own values.
 
 ```env
 DB_PASSWORD=your_password_here
-EMAIL_USER=<provided_in_.env.sample>
-EMAIL_PASS=<provided_in_.env.sample>
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_16_char_app_password
 ```
+
+- **`DB_PASSWORD`** — any value you like; it is only used by your local MySQL container.
+- **`EMAIL_USER` / `EMAIL_PASS`** — required for the email features (registration verification, password reset, contact seller). Supply a Gmail address and a **Google App Password**, not your normal account password.
+
+To generate an App Password: enable 2-Step Verification on the Google account, then go to **Google Account → Security → 2-Step Verification → App passwords** and create one for this project. Google shows it once, as 16 characters. Paste it into `.env` as `EMAIL_PASS` and store it in a password manager.
+
+The app runs fine without email configured — registration verification, password reset, and contact-seller will simply fail until you add credentials.
 
 ### 3. Start all services
 
@@ -108,7 +115,7 @@ docker exec -it db mysql -u root -p
 
 ## Seeded Demo Data
 
-The database is pre-populated with sample users, listings, and events so you can explore the app immediately.
+The database is pre-populated with sample users, listings, and events so you can explore the app immediately. These accounts exist only in your local container and are seeded from `db/init.sql`.
 
 ### Regular Users
 | Email | Password |
